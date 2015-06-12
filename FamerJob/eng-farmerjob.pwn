@@ -272,9 +272,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 						{
 						    if(PlayerInfo[playerid][pPaddyProgress][i] >= 100)
 						    {
+						    CreatePaddyHarvest(playerid,CheckPaddyFreeSlot(playerid,2),x,y,z+0.9);
 						    DestroyPaddy(playerid,i);
-						    //CreatePaddyHarvest(playerid,CheckPaddyFreeSlot(playerid,2),x,y,z);
-						    SetTimerEx("CreatePaddyHarvest",2000,0,"iifff",playerid,CheckPaddyFreeSlot(playerid,2),x,y,z+1);
 						    return 1;
 						    }
 						    else
