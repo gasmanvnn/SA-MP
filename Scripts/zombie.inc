@@ -1,6 +1,6 @@
 /*
 Zombie NPC Include by Gasman v0.1
-native CreateZombieForPlayer(playerid,Float:x,Float:y,Float:z,Float:a,Float:distancespawn = 50.0,timerespawn = 20000);
+native CreateZombieForPlayer(playerid,Float:x,Float:y,Float:z,Float:a,Float:distancespawn = 70.0,timerespawn = 20000);
 native DestroyZombieForPlayer(playerid);
 native IsZombieCreatedForPlayer(playerid);
 native IsPlayerZombie(playerid);
@@ -404,7 +404,7 @@ stock DestroyZombieForPlayer(playerid)
 	IsPlayerCreatedZombie[playerid] = 0;
 	return 1;
 }
-stock CreateZombieForPlayer(playerid,Float:x,Float:y,Float:z,Float:a,Float:distancespawn = 50.0,timerespawn = 20000)
+stock CreateZombieForPlayer(playerid,Float:x,Float:y,Float:z,Float:a,Float:distancespawn = 70.0,timerespawn = 20000)
 {
 	if(PlayerZombieCount[playerid] > 0 ||IsZombieCreatedForPlayer(playerid) == true) return 0;
     new str[128];
