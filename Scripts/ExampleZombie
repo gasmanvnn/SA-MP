@@ -1,0 +1,37 @@
+#include <a_samp>
+#include <fcnpc>
+#include <zcmd>
+#include <YSI\y_timers>
+#define MAX_ZOMBIE_FOR_PLAYER 5
+#include <zombie>
+CMD:zombie(playerid,params[])
+{
+	new Float:x,Float:y,Float:z,Float:a;
+	GetPlayerPos(playerid,x,y,z);
+	GetPlayerFacingAngle(playerid,a);
+    CreateZombieForPlayer(playerid,x,y,z,a);
+	return 1;
+}
+CMD:dzombie(playerid,params[])
+{
+	if(IsZombieCreatedForPlayer(playerid) == true)
+	{
+	    DestroyZombieForPlayer(playerid);
+	}
+	return 1;
+}
+CMD:weapon(playerid,params[])
+{
+	GivePlayerWeapon(playerid,strval(params),1000);
+	return 1;
+}
+public OnPlayerKillZombie(playerid,zombieid,weaponid)
+{
+	SendDeathMessage(playerid,zombieid,weaponid);
+	return 1;
+}
+public OnZombieKillPlayer(zombieid,playerid)
+{
+	SendDeathMessage(zombieid,playerid,1);
+	return 1;
+}
