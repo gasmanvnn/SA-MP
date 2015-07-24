@@ -116,6 +116,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
 		CallLocalFunction("OnZombieKillPlayer","ii",killerid,playerid);
 	}
+	PlayerRangeZAttack[playerid] = DefaultZAttackRange;
 	#if defined Zinc_OnPlayerDeath
         Zinc_OnPlayerDeath(playerid, killerid, reason);
     #endif
