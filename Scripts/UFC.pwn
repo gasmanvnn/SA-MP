@@ -67,8 +67,6 @@ enum ufc
 	FighterHP[2],
 	FighterAName[64],
 	FighterBName[64],
-	Float:FighterAMPos[3],
-	Float:FighterBMPos[3],
 	Text3D:FighterTextName[2],
 	Text3D:FighterTextHP[2],
 	ActorBar,
@@ -218,12 +216,6 @@ Callback MoveTime()
 		GetPlayerPos(UFC[Fighter][1],x[1],y[1],z[1]);
 		MoveRNPC(UFC[Fighter][0], x[1],y[1],z[1],RNPC_SPEED_WALK);
 	    MoveRNPC(UFC[Fighter][1], x[0],y[0],z[0],RNPC_SPEED_WALK);
-	    UFC[FighterAMPos][0] = x[1];
-	    UFC[FighterAMPos][1] = y[1];
-	    UFC[FighterAMPos][2] = z[1];
-	    UFC[FighterBMPos][0] = x[0];
-	    UFC[FighterBMPos][1] = y[0];
-	    UFC[FighterBMPos][2] = z[0];
 	    SetTimer("MoveTime",500,0);
     }
 	return 1;
@@ -241,10 +233,7 @@ Callback UFCFight()
     UFC[nMove] = 1;
 	new ran1 = random(2),
 		ran2 = random(15),id1,id2;
-	SetPlayerPos(UFC[Fighter][0],UFC[FighterAMPos][0],UFC[FighterAMPos][1],UFC[FighterAMPos][2]);
-	SetPlayerPos(UFC[Fighter][1],UFC[FighterBMPos][0],UFC[FighterBMPos][1],UFC[FighterBMPos][2]);
-    //ClearAnimations(UFC[FighterHP][0]);
-    //ClearAnimations(UFC[FighterHP][1]);
+	new	Continue = 1;
     if(ran1 == 0)
     {
     id1 = 0,id2 = 1;
@@ -258,129 +247,99 @@ Callback UFCFight()
 	 	case 0:
 	 	{
             RandomBlood(id2);
-		 	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_1", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_1", 4.0, 0, 0, 0, 0, 0);
+		 	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_1", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_1", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
-			
 	 	}
 	  	case 1:
 	   	{
 	   	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_2", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_2", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
 	    case 2:
 	    {
 	        RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_3", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_3", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_3", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_3", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
     	case 3:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_1", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_1", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_1", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_1", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
 	    case 4:
 	    {
 	        RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_2", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_2", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
 	    case 5:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_3", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_3", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_3", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_3", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
 	    case 6:
 	    {
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FightC_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_block", 4.0, 0, 0, 0, 0, 0);
-			
-			
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FightC_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_block", 4.0, 0, 0, 1, 1, 0);
    		}
    		case 7:
 	    {
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FightB_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 0);
-			
-			
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FightB_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 1, 1, 0);
    		}
    		case 8:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_1", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_1", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_1", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_1", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
    		case 9:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_2", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_2", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
    		case 10:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_3", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_3", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_3", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_3", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
    		case 11:
     	{
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "FightD_IDLE", 4.0, 0, 0, 0, 0, 0);
-			
-			
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "FightD_IDLE", 4.0, 0, 0, 1, 1, 0);
    		}
    		case 12:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
    		case 13:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick_B", 4.0, 0, 0, 0, 0, 0);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick_B", 4.0, 0, 0, 1, 1, 0);
 			UFC[FighterHP][id2] -= random(20);
-			
-			
    		}
    		case 14:
     	{
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 0);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 0);
-			
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 1, 1, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 1, 1, 0);
    		}
 	}
 	if(CheckFighterDead(id2) == 1)
@@ -390,7 +349,7 @@ Callback UFCFight()
 	UFCWin(id1);
 	UFCStop();
 	}
-	else
+	else if(Continue == 1)
 	{
 	SetTimer("UFCIdle",500,0);
 	}
@@ -410,7 +369,7 @@ Callback UFCWin(id)
 		SendClientMessageToAll(COLOR_RED,str);
 	}
 	SetTimerEx("WinSalute",1000,0,"i",id);
-	SetPlayerPos(UFC[Fighter][id],2273.4878,-1711.4517,18.3548);
+	//SetPlayerPos(UFC[Fighter][id],2273.4878,-1711.4517,18.3548);
 	for(new i =0;i<MAX_PLAYERS;i++)
 	{
 	    if(IsPlayerConnected(i))
