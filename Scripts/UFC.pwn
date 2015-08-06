@@ -16,6 +16,10 @@
 	 ****************************
 	 Change Log:
 	 Version 1: Release
+	 Version 1.1:
+	 -Random Boxes Name,
+	 -Random Skin,
+	 -Fix Fighting Pos,
 	 ****************************
 	 COMMAND:
 	 /ufc [bar,bet]
@@ -34,10 +38,37 @@
 #include <streamer>
 #define Callback%0(%1) forward%0(%1);\
 						public%0(%1)
+new fighterskin[]=
+{
+	18,45,80,81,96,97,146,154,203,204,252,293
+	
+};
+new fightername[][]=
+{
+	"Cung Lê",
+	"Brock Lesnar",
+	"Vitor Belfort",
+	"Jen Pulver",
+	"Forrest Griffin",
+	"Urijah Faber",
+	"Benson Henderson",
+	"Jose Aldo",
+	"Shogun Rua",
+	"Wanderlei Silva",
+	"Rashad Evans",
+	"Bas Rutten",
+	"Dan Serven",
+	"Cain Velasquez",
+	"Lyoto Machida"
+};
 enum ufc
 {
 	Fighter[2],
 	FighterHP[2],
+	FighterAName[64],
+	FighterBName[64],
+	Float:FighterAMPos[3],
+	Float:FighterBMPos[3],
 	Text3D:FighterTextName[2],
 	Text3D:FighterTextHP[2],
 	ActorBar,
@@ -49,6 +80,7 @@ enum ufc
 	Dead,
 	Start,
 	nMove,
+	cBet,
 	Count = 3600000,
 }
 new UFC[ufc];
@@ -89,13 +121,13 @@ public OnPlayerSpawn(playerid)
 	{
 	    if(strcmp(GetName(playerid), "FighterA", true) == 0)
     	{
-    	    SetPlayerSkin(playerid,81);
+			FighterSkin(playerid);
     	    SetPlayerPos(playerid,2268.7737,-1709.3164,18.3554);
     	    SetPlayerFacingAngle(playerid,232.04);
     	}
     	else if(strcmp(GetName(playerid), "FighterB", true) == 0)
     	{
-    	    SetPlayerSkin(playerid,80);
+    	    FighterSkin(playerid);
     	    SetPlayerPos(playerid,2273.3877,-1713.4628,18.3554);
     	    SetPlayerFacingAngle(playerid,44.1034);
     	}
@@ -109,16 +141,32 @@ public OnPlayerSpawn(playerid)
 	return 1;
 }
 /**Callback**/
+Callback FighterSkin(playerid)
+{
+    SetPlayerSkin(playerid,fighterskin[random(sizeof(fighterskin))]);
+    if(GetPlayerSkin(playerid) != 80 &&GetPlayerSkin(playerid) != 81)
+    {
+    SetPlayerAttachedObject(playerid, 0, 19555, 5, 0.0210, -0.0100, -0.0139, -1.8999, -77.7000, -159.8000, 1.0000, 1.0000, 1.0000, 0xFFFFFFFF, 0xFFFFFFFF); // BoxingGloveL attached to the Left Hand of Cesaro
+	SetPlayerAttachedObject(playerid, 1, 19556, 6, 0.0000, 0.0000, 0.0000, 0.0000, -91.0999, 0.0000, 1.0000, 1.0000, 1.0000, 0xFFFFFFFF, 0xFFFFFFFF); // BoxingGloveR attached to the Right Hand of Cesaro
+    }
+	return 1;
+}
 Callback ConnectFighter()
 {
     UFC[Fighter][0] = ConnectRNPC("FighterA");
 	UFC[Fighter][1] = ConnectRNPC("FighterB");
+	new randName = random(sizeof(fightername));
+	format(UFC[FighterAName],64,"%s",fightername[randName]);
+	randName = random(sizeof(fightername));
+	format(UFC[FighterBName],64,"%s",fightername[randName]);
+	
 	UFC[FighterHP][0] = 100;
 	UFC[FighterHP][1] = 100;
-    UFC[FighterTextName][0] = CreateDynamic3DTextLabelEx("Fighter A",COLOR_YELLOW, 0,0,0.5,10.0, UFC[Fighter][0]);
-	UFC[FighterTextName][1] = CreateDynamic3DTextLabelEx("Fighter B",COLOR_YELLOW, 0,0,0.5,10.0, UFC[Fighter][1]);
+    UFC[FighterTextName][0] = CreateDynamic3DTextLabelEx(UFC[FighterAName],COLOR_YELLOW, 0,0,0.5,10.0, UFC[Fighter][0]);
+	UFC[FighterTextName][1] = CreateDynamic3DTextLabelEx(UFC[FighterBName],COLOR_YELLOW, 0,0,0.5,10.0, UFC[Fighter][1]);
 	UFC[FighterTextHP][0] = CreateDynamic3DTextLabelEx(""COL_GREEN"["COL_RED"IIIIIIIIII"COL_GREEN"]",-1, 0,0,0.3,10.0, UFC[Fighter][0]);
 	UFC[FighterTextHP][1] = CreateDynamic3DTextLabelEx(""COL_GREEN"["COL_RED"IIIIIIIIII"COL_GREEN"]",-1, 0,0,0.3,10.0, UFC[Fighter][1]);
+	UFC[cBet] = 1;
 	return 1;
 }
 Callback UFCTime()
@@ -129,6 +177,7 @@ Callback UFCTime()
 	    SendClientMessageToAll(COLOR_RED,"[UFC]:"COL_GREEN" Ultimate Fighting Championship");
 	    SendClientMessageToAll(COLOR_RED,"[UFC]:"COL_GREEN" Start after 60sec (Goto gymnasiums to view)");
 	    ConnectFighter();
+	    
 	}
 	else if(UFC[Count] <= 0)
 	{
@@ -141,12 +190,18 @@ Callback UFCTime()
 Callback StartUFC()
 {
 	UFC[Start] = 1;
+	UFC[cBet] = 0;
+	new str[128];
 	for(new i=0;i<MAX_PLAYERS;i++)
 	{
 	    if(IsPlayerConnected(i) && IsPlayerInRangeOfPoint(i,40.0,2271.4333,-1711.7360,18.3548))
 	    {
 	    SendClientMessage(i,COLOR_RED,"[UFC-MC]"COL_YELLOW"Linda"COL_WHITE":Ladies and Gentlemen");
 	    SendClientMessage(i,COLOR_RED,"[UFC-MC]"COL_YELLOW"Linda"COL_WHITE":Welcome to the Ultimate Fighting Championship");
+	    SendClientMessage(i,COLOR_RED,"[UFC-MC]"COL_YELLOW"Linda"COL_RED":The match between two boxers");
+		format(str,sizeof(str),"[UFC-MC]"COL_YELLOW"Linda"COL_LIGHTBLUE": %s "COL_WHITE" and "COL_LIGHTBLUE" %s",
+		UFC[FighterAName],UFC[FighterBName]);
+	    SendClientMessage(i,COLOR_RED,str);
 	    }
 	}
     
@@ -163,6 +218,12 @@ Callback MoveTime()
 		GetPlayerPos(UFC[Fighter][1],x[1],y[1],z[1]);
 		MoveRNPC(UFC[Fighter][0], x[1],y[1],z[1],RNPC_SPEED_WALK);
 	    MoveRNPC(UFC[Fighter][1], x[0],y[0],z[0],RNPC_SPEED_WALK);
+	    UFC[FighterAMPos][0] = x[1];
+	    UFC[FighterAMPos][1] = y[1];
+	    UFC[FighterAMPos][2] = z[1];
+	    UFC[FighterBMPos][0] = x[0];
+	    UFC[FighterBMPos][1] = y[0];
+	    UFC[FighterBMPos][2] = z[0];
 	    SetTimer("MoveTime",500,0);
     }
 	return 1;
@@ -180,8 +241,10 @@ Callback UFCFight()
     UFC[nMove] = 1;
 	new ran1 = random(2),
 		ran2 = random(15),id1,id2;
-    ClearAnimations(UFC[FighterHP][0]);
-    ClearAnimations(UFC[FighterHP][1]);
+	SetPlayerPos(UFC[Fighter][0],UFC[FighterAMPos][0],UFC[FighterAMPos][1],UFC[FighterAMPos][2]);
+	SetPlayerPos(UFC[Fighter][1],UFC[FighterBMPos][0],UFC[FighterBMPos][1],UFC[FighterBMPos][2]);
+    //ClearAnimations(UFC[FighterHP][0]);
+    //ClearAnimations(UFC[FighterHP][1]);
     if(ran1 == 0)
     {
     id1 = 0,id2 = 1;
@@ -195,8 +258,8 @@ Callback UFCFight()
 	 	case 0:
 	 	{
             RandomBlood(id2);
-		 	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_1", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_1", 4.0, 0, 0, 0, 0, 500);
+		 	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_1", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_1", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -205,8 +268,8 @@ Callback UFCFight()
 	  	case 1:
 	   	{
 	   	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_2", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_2", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_2", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -214,8 +277,8 @@ Callback UFCFight()
 	    case 2:
 	    {
 	        RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_3", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_3", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FIGHTB_3", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "HITB_3", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -223,8 +286,8 @@ Callback UFCFight()
     	case 3:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_1", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_1", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_1", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_1", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -232,8 +295,8 @@ Callback UFCFight()
 	    case 4:
 	    {
 	        RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_2", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_2", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_2", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -241,31 +304,31 @@ Callback UFCFight()
 	    case 5:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_3", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_3", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FIGHTC_3", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "HITC_3", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
    		}
 	    case 6:
 	    {
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FightC_IDLE", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_C", "FightC_IDLE", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_C", "FightC_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_block", 4.0, 0, 0, 0, 0, 0);
 			
 			
    		}
    		case 7:
 	    {
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FightB_2", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_B", "FightB_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 0);
 			
 			
    		}
    		case 8:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_1", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_1", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_1", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_1", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -273,8 +336,8 @@ Callback UFCFight()
    		case 9:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_2", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_2", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -282,24 +345,24 @@ Callback UFCFight()
    		case 10:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_3", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_3", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_3", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "HITD_3", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
    		}
    		case 11:
     	{
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "FightD_IDLE", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_D", "FIGHTD_2", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_D", "FightD_IDLE", 4.0, 0, 0, 0, 0, 0);
 			
 			
    		}
    		case 12:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
@@ -307,16 +370,16 @@ Callback UFCFight()
    		case 13:
     	{
     	    RandomBlood(id2);
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick_B", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_E", "Hit_fightkick_B", 4.0, 0, 0, 0, 0, 0);
 			UFC[FighterHP][id2] -= random(20);
 			
 			
    		}
    		case 14:
     	{
-	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 500);
-			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 500);
+	    	ApplyAnimation(UFC[Fighter][id1], "FIGHT_E", "FightKick_B", 4.0, 0, 0, 0, 0, 0);
+			ApplyAnimation(UFC[Fighter][id2], "FIGHT_B", "FightB_IDLE", 4.0, 0, 0, 0, 0, 0);
 			
    		}
 	}
@@ -329,19 +392,22 @@ Callback UFCFight()
 	}
 	else
 	{
-	SetTimer("UFCIdle",1000,0);
+	SetTimer("UFCIdle",500,0);
 	}
 	return 1;
 }
 Callback UFCWin(id)
 {
+	new str[128];
 	if(id == 0)
 	{
-		SendClientMessageToAll(COLOR_RED,"[UFC]:"COL_YELLOW"Fither A"COL_GREEN" has won");
+	    format(str,sizeof(str),"UFC:"COL_YELLOW" %s "COL_GREEN" has won",UFC[FighterAName]);
+		SendClientMessageToAll(COLOR_RED,str);
 	}
 	else
  	{
- 	    SendClientMessageToAll(COLOR_RED,"[UFC]:"COL_YELLOW"Fither B"COL_GREEN" has won");
+ 	    format(str,sizeof(str),"UFC:"COL_YELLOW" %s "COL_GREEN" has won",UFC[FighterBName]);
+		SendClientMessageToAll(COLOR_RED,str);
 	}
 	SetTimerEx("WinSalute",1000,0,"i",id);
 	SetPlayerPos(UFC[Fighter][id],2273.4878,-1711.4517,18.3548);
@@ -378,7 +444,7 @@ Callback WinSalute(id)
 }
 Callback UFCStop()
 {
-
+    UFC[cBet] = 0;
     UFC[Start] = 0;
     UFC[nMove] = 0;
     UFC[FighterHP][0] = 100;
@@ -433,12 +499,21 @@ Dialog:UFCFBBet(playerid, response, listitem, inputtext[])
 }
 Dialog:UFCBet(playerid, response, listitem, inputtext[])
 {
+	new str[128];
 	if(response)
 	{
 	    switch(listitem)
 	    {
-	        case 0:DialogShow(playerid,"UFCFABet",DIALOG_STYLE_INPUT,"UFC Betting Figther A","Please enter the amount you want to bet","Input","Close");
-	        case 1:DialogShow(playerid,"UFCFBBet",DIALOG_STYLE_INPUT,"UFC Betting Figther A","Please enter the amount you want to bet","Input","Close");
+	        case 0:
+			{
+			    format(str,sizeof(str),"Betting Boxes %s",UFC[FighterAName]);
+				DialogShow(playerid,"UFCFABet",DIALOG_STYLE_INPUT,str,"Please enter the amount you want to bet","Input","Close");
+			}
+	        case 1:
+			{
+			    format(str,sizeof(str),"Betting Boxes %s",UFC[FighterBName]);
+				DialogShow(playerid,"UFCFBBet",DIALOG_STYLE_INPUT,str,"Please enter the amount you want to bet","Input","Close");
+			}
 		}
 	}
 	return 1;
@@ -522,18 +597,20 @@ CMD:ufc(playerid,params[])
 		}
 		else SendClientMessage(playerid,COLOR_RED,"You not near of UFC Bar");
 	}
-	if(strcmp(type, "bet", true) == 0)
+	else if(strcmp(type, "bet", true) == 0)
 	{
 	    if(IsPlayerInRangeOfPoint(playerid,5,2286.6392,-1705.6304,17.6016))
 		{
 		    if(UFC[Start] == 1) return SendClientMessage(playerid,COLOR_RED,"Round is already Begun ,please wait for next round");
-            DialogShow(playerid,"UFCBet",DIALOG_STYLE_LIST,"UFC Bet","Fighter A\nFighter B","Select","Close");
+		    if(UFC[cBet] == 0) return SendClientMessage(playerid,COLOR_RED,"Can't Betting now");
+		    new str[128];format(str,sizeof(str),"%s\n%s",UFC[FighterAName],UFC[FighterBName]);
+            DialogShow(playerid,"UFCBet",DIALOG_STYLE_LIST,"UFC Bet",str,"Select","Close");
 		}
 		else SendClientMessage(playerid,COLOR_RED,"You not near of UFC Bar");
 	}
 	else
 	{
-	SendClientMessage(playerid,COLOR_GREEN,"USAGE:/ufc [NAME:bar]");
+	SendClientMessage(playerid,COLOR_GREEN,"USAGE:/ufc [NAME:bar,bet]");
 	}
 	return 1;
 }
