@@ -40,6 +40,25 @@ public OnFilterScriptInit()
 #if defined gkp_OnFilterScriptInit
 	forward gkp_OnFilterScriptInit();
 #endif
+public OnFilterScriptExit()
+{
+	for(new i =0;i<34;i++) TextDrawDestroy(GKeyPad[i]);
+	#if defined gkp_OnFilterScriptExit
+		return gkp_OnFilterScriptExit();
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnFilterScriptExit
+	#undef OnFilterScriptExit
+#else
+	#define _ALS_OnFilterScriptExit
+#endif
+ 
+#define OnFilterScriptExit gkp_OnFilterScriptExit
+#if defined gkp_OnFilterScriptExit
+	forward gkp_OnFilterScriptExit();
+#endif
 
 #else
 
@@ -65,6 +84,27 @@ public OnGameModeInit()
 #if defined gkp_OnGameModeInit
 	forward gkp_OnGameModeInit();
 #endif
+
+public OnGameModeExit()
+{
+	for(new i =0;i<34;i++) TextDrawDestroy(GKeyPad[i]);
+	#if defined gkp_OnGameModeExit
+		return gkp_OnGameModeExit();
+	#else
+		return 1;
+	#endif
+}
+#if defined _ALS_OnGameModeExit
+	#undef OnGameModeExit
+#else
+	#define _ALS_OnGameModeExit
+#endif
+ 
+#define OnGameModeExit gkp_OnGameModeExit
+#if defined gkp_OnGameModeExit
+	forward gkp_OnGameModeExit();
+#endif
+
 
 #endif
 
@@ -105,32 +145,37 @@ public OnPlayerConnect(playerid)
 
 public OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
-	if(clickedid == GKeyPad[33])
-		HideGKeyPad(playerid);
-	if(clickedid == GKeyPad[31])
-		GKeyPadEnter(playerid);
-	if(clickedid == GKeyPad[32])
-		GKeypadRemoveNumber(playerid);
-	if(clickedid == GKeyPad[21])
-		GKeypadAddNumber(playerid,1);
-	if(clickedid == GKeyPad[22])
-		GKeypadAddNumber(playerid,2);
-	if(clickedid == GKeyPad[23])
-		GKeypadAddNumber(playerid,3);
-	if(clickedid == GKeyPad[24])
-		GKeypadAddNumber(playerid,4);
-	if(clickedid == GKeyPad[25])
-		GKeypadAddNumber(playerid,5);
-	if(clickedid == GKeyPad[26])
-		GKeypadAddNumber(playerid,6);
-	if(clickedid == GKeyPad[27])
-		GKeypadAddNumber(playerid,7);
-	if(clickedid == GKeyPad[28])
-		GKeypadAddNumber(playerid,8);
-	if(clickedid == GKeyPad[29])
-		GKeypadAddNumber(playerid,9);
-	if(clickedid == GKeyPad[30])
-		GKeypadAddNumber(playerid,0);
+	if(GKeyPadOpened[playerid] == 1)
+	{
+		if(clickedid == Text:INVALID_TEXT_DRAW)
+			HideGKeyPad(playerid);
+		if(clickedid == GKeyPad[33])
+			HideGKeyPad(playerid);
+		if(clickedid == GKeyPad[31])
+			GKeyPadEnter(playerid);
+		if(clickedid == GKeyPad[32])
+			GKeypadRemoveNumber(playerid);
+		if(clickedid == GKeyPad[21])
+			GKeypadAddNumber(playerid,1);
+		if(clickedid == GKeyPad[22])
+			GKeypadAddNumber(playerid,2);
+		if(clickedid == GKeyPad[23])
+			GKeypadAddNumber(playerid,3);
+		if(clickedid == GKeyPad[24])
+			GKeypadAddNumber(playerid,4);
+		if(clickedid == GKeyPad[25])
+			GKeypadAddNumber(playerid,5);
+		if(clickedid == GKeyPad[26])
+			GKeypadAddNumber(playerid,6);
+		if(clickedid == GKeyPad[27])
+			GKeypadAddNumber(playerid,7);
+		if(clickedid == GKeyPad[28])
+			GKeypadAddNumber(playerid,8);
+		if(clickedid == GKeyPad[29])
+			GKeypadAddNumber(playerid,9);
+		if(clickedid == GKeyPad[30])
+			GKeypadAddNumber(playerid,0);
+	}
 	#if defined gkp_OnPlayerClickTextDraw
 		return gkp_OnPlayerClickTextDraw(playerid, _:clickedid)
 	#else
